@@ -35,26 +35,35 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   const account = accounts[0];
   const networkId = await web3.eth.net.getId();
 
-  // Example EMP Parameters. Customize these.
-  const empParams = {
-    expirationTimestamp: "1640995200", // 01/01/2022 @ 0:00 (UTC)
+  // Example Perpetual Parameters. Customize these.
+  const perpetualParams = {
     collateralAddress: "0xd0a1e359811322d97991e03f863a0c30c2cf029c", // Kovan WETH address. Mainnet WETH is: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.
     priceFeedIdentifier: padRight(utf8ToHex("USDETH"), 64), // Using the USDETH price.
-    syntheticName: "uUSDwETH Synthetic Token Expiring 1 January 2022", // Long name.
-    syntheticSymbol: "uUSDwETH-JAN", // Short name.
+    fundingRateIdentifier: padRight(utf8ToHex("USDETH"), 64), // Using the USDETH funding rate identifier.
+    syntheticName: "uUSDwETH Perpetual Synthetic Token", // Long name.
+    syntheticSymbol: "uUSDwETH", // Short name.
     collateralRequirement: { rawValue: toWei("1.25") }, // 125% collateral req.
-    disputeBondPct: { rawValue: toWei("0.1") }, // 10% dispute bond.
-    sponsorDisputeRewardPct: { rawValue: toWei("0.05") }, // 5% reward for sponsors who are disputed invalidly
-    disputerDisputeRewardPct: { rawValue: toWei("0.2") }, // 20% reward for correct disputes.
+    disputeBondPercentage: { rawValue: toWei("0.1") }, // 10% dispute bond.
+    sponsorDisputeRewardPercentage: { rawValue: toWei("0.05") }, // 5% reward for sponsors who are disputed invalidly
+    disputerDisputeRewardPercentage: { rawValue: toWei("0.2") }, // 20% reward for correct disputes.
     minSponsorTokens: { rawValue: toWei("100") }, // Min sponsor position size of 100 synthetic tokens.
+    tokenScaling: { rawValue: toWei("1") }, // Token scaling.
     liquidationLiveness: 7200, // 2 hour liquidation liveness.
-    withdrawalLiveness: 7200, // 2 hour withdrawal liveness.
-    excessTokenBeneficiary:  getAddress("Store", networkId), // UMA Store contract.
+    withdrawalLiveness: 7200 // 2 hour withdrawal liveness.
   };
 
-  const empCreator = new web3.eth.Contract(
-    getAbi("ExpiringMultiPartyCreator"),
-    getAddress("ExpiringMultiPartyCreator", networkId)
+  const configSettings = {
+    rewardRatePerSecond: { rawValue: "0" },
+    proposerBondPercentage: { rawValue: "0" },
+    timelockLiveness: 86400, // 1 day
+    maxFundingRate: { rawValue: web3.utils.toWei("0.00001") },
+    minFundingRate: { rawValue: web3.utils.toWei("-0.00001") },
+    proposalTimePastLimit: 0
+  };
+
+  const perpetualCreator = new web3.eth.Contract(
+    getAbi("PerpetualCreator"),
+    getAddress("PerpetualCreator", networkId)
   );
 
   // Transaction parameters
@@ -66,12 +75,13 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
 
   // Simulate transaction to test before sending to the network.
   console.log("Simulating Deployment...");
-  const address = await empCreator.methods.createExpiringMultiParty(empParams).call(transactionOptions);
+  const address = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).call(transactionOptions);
   console.log("Simulation successful. Expected Address:", address);
 
   // Since the simulated transaction succeeded, send the real one to the network.
-  const { transactionHash } = await empCreator.methods.createExpiringMultiParty(empParams).send(transactionOptions);
+  const { transactionHash } = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).send(transactionOptions);
   console.log("Deployed in transaction:", transactionHash);
+  process.exit(0);
 })().catch((e) => {
   console.error(e);
   process.exit(1); // Exit with a nonzero exit code to signal failure.
