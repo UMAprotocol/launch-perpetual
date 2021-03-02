@@ -1,11 +1,11 @@
-# Stub Package for Launching a New EMP
+# Stub Package for Launching a New Perpetual
 
-The purpose of this repository/package is to make it easy to customize your EMP deployment. Feel free to use this
+The purpose of this repository/package is to make it easy to customize your Perpetual deployment. Feel free to use this
 repository in place or fork and customize it.
 
 ## Install system dependencies
 
-You will need to install nodejs v12 (we recommend `nvm` to manage node versions) and yarn.
+You will need to install nodejs (we recommend the latest stable version, nodejs v14, and `nvm` to manage node versions) and yarn.
 
 Note: these additional dependencies are required -- you may or may not have them on your system already:
 
@@ -53,7 +53,7 @@ node index.js --gasprice 50 --url your.node.url.io --mnemonic "your mnemonic (12
 
 ## Customize the script
 
-The script should be fairly easy to read and understand. The primary use case for customization is modifying the empParams
-struct to customize the construction parameters for the EMP. See [the script](./index.js) for more details.
+The script should be fairly easy to read and understand. The primary use case for customization is modifying the perpetualParams
+struct to customize the construction parameters for the Perpetual. See [the script](./index.js) for more details.
 
 We encourage you to fork this repo and customize the script as you see fit!
