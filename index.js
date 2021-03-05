@@ -74,7 +74,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
     timelockLiveness: 86400, // 1 day
     maxFundingRate: { rawValue: web3.utils.toWei("0.00001") },
     minFundingRate: { rawValue: web3.utils.toWei("-0.00001") },
-    proposalTimePastLimit: 0
+    proposalTimePastLimit: 1800 // 30 minutes
   };
 
   const perpetualCreator = new web3.eth.Contract(
