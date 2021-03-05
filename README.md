@@ -36,10 +36,10 @@ yarn ganache-fork your.node.url.io
 ```
 
 In a separate terminal, run the deployment script (it defaults to using localhost:8545 as the ETH node, which is
-desired in this case). Note: mnemonic is optional here -- without it, ganache will use its default pre-loaded account.
+desired in this case). Note: mnemonic is optional here -- without it, ganache will use its default pre-loaded account. Replace the example values with your values.
 
 ```bash
-node index.js --gasprice 50 --mnemonic "your mnemonic (12 word seed phrase)"
+node index.js --gasprice 50 --mnemonic "your mnemonic (12 word seed phrase)" --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
 ```
 
 Now you should be able to use `localhost:8545` to interact with a forked version of mainnet (or kovan) where your
@@ -47,8 +47,10 @@ contract is deployed.
 
 ## Run the deployment script on mainnet or kovan
 
+Replace the example values with your values.
+
 ```bash
-node index.js --gasprice 50 --url your.node.url.io --mnemonic "your mnemonic (12 word seed phrase)"
+node index.js --gasprice 50 --url your.node.url.io --mnemonic "your mnemonic (12 word seed phrase)" --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
 ```
 
 ## Customize the script
