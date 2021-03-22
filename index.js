@@ -2,12 +2,10 @@ const Web3 = require("web3");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const { getAbi, getAddress } = require("@uma/core");
 const { parseFixed } = require("@ethersproject/bignumber");
+require("dotenv").config();
 
 // Optional arguments:
 // --url: node url, by default points at http://localhost:8545.
-// --mnemonic: an account mnemonic you'd like to use. The script will default to using the node's unlocked accounts.
-// Mandatory arguments:
-// --gasprice: gas price to use in GWEI
 // --priceFeedIdentifier: price identifier to use.
 // --collateralAddress: collateral token address.
 // --expirationTimestamp: timestamp that the contract will expire at.
@@ -16,18 +14,20 @@ const { parseFixed } = require("@ethersproject/bignumber");
 // --minSponsorTokens: minimum sponsor position size
 
 const argv = require("minimist")(process.argv.slice(), {
-  string: ["url", "mnemonic", "priceFeedIdentifier", "fundingRateIdentifier", "collateralAddress", "syntheticName", "syntheticSymbol", "minSponsorTokens"]
+  string: ["url", "priceFeedIdentifier", "fundingRateIdentifier", "collateralAddress", "syntheticName", "syntheticSymbol", "minSponsorTokens"]
 });
 
+// Sanity test optional arguments:
+if (!argv.url.startsWith("https")) throw "--url must be an HTTPS endpoint";
 if (!argv.priceFeedIdentifier) throw "--priceFeedIdentifier required";
 if (!argv.fundingRateIdentifier) throw "--fundingRateIdentifier required";
 if (!argv.collateralAddress) throw "--collateralAddress required";
 if (!argv.syntheticName) throw "--syntheticName required";
 if (!argv.syntheticSymbol) throw "--syntheticSymbol required";
 if (!argv.minSponsorTokens) throw "--minSponsorTokens required";
-if (!argv.gasprice) throw "--gasprice required (in GWEI)";
-if (typeof argv.gasprice !== "number") throw "--gasprice must be a number";
-if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between 1 and 1000 (GWEI)";
+
+// Check for environment variables:
+if (!process.env.MNEMONIC) console.log("missing account MNEMONIC, defaulting to node's unlocked account");
 
 // Wrap everything in an async function to allow the use of async/await.
 (async () => {
@@ -36,14 +36,14 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   // See HDWalletProvider documentation: https://www.npmjs.com/package/@truffle/hdwallet-provider.
   const hdwalletOptions = {
     mnemonic: {
-      phrase: argv.mnemonic,
+      phrase: process.env.MNEMONIC,
     },
     providerOrUrl: url,
     addressIndex: 0, // Change this to use the nth account.
   };
 
   // Initialize web3 with an HDWalletProvider if a mnemonic was provided. Otherwise, just give it the url.
-  const web3 = new Web3(argv.mnemonic ? new HDWalletProvider(hdwalletOptions) : url);
+  const web3 = new Web3(process.env.MNEMONIC ? new HDWalletProvider(hdwalletOptions) : url);
   const { toWei, utf8ToHex, padRight } = web3.utils;
 
   const accounts = await web3.eth.getAccounts();
@@ -92,8 +92,9 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
 
   // Transaction parameters
   const transactionOptions = {
-    gas: 12000000, // 12MM is very high. Set this lower if you only have < 2 ETH or so in your wallet.
-    gasPrice: argv.gasprice * 1000000000, // gasprice arg * 1 GWEI
+    gas: 12000000, // 12MM is very high. Set this lower if you have < 2 ETH or so in your wallet.
+    gasPrice: await web3.eth.getGasPrice(),
+    // Web3 estimates the gas price using the last few blocks median gas price.
     from: account,
   };
 
@@ -102,6 +103,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   const address = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).call(transactionOptions);
   console.log("Simulation successful. Expected Address:", address);
 
+  return;
   // Since the simulated transaction succeeded, send the real one to the network.
   const { transactionHash } = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).send(transactionOptions);
   console.log("Deployed in transaction:", transactionHash);
