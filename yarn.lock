@@ -1052,7 +1052,7 @@
   resolved "https://registry.yarnpkg.com/@truffle/error/-/error-0.0.12.tgz#83e02e6ffe1d154fe274141d90038a91fd1e186d"
   integrity sha512-kZqqnPR9YDJG7KCDOcN1qH16Qs0oz1PzF0Y93AWdhXuL9S9HYo/RUUeqGKbPpRBEZldQUS8aa4EzfK08u5pu6g==
 
-"@truffle/hdwallet-provider@^1.0.25", "@truffle/hdwallet-provider@^1.2.1":
+"@truffle/hdwallet-provider@^1.0.25", "@truffle/hdwallet-provider@^1.2.3":
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/@truffle/hdwallet-provider/-/hdwallet-provider-1.2.4.tgz#e231902ab1acdebd594205080b0cba2fb1279fcf"
   integrity sha512-WT8KCRwIlqNjpyE76mSa8OQBwpgnawKGQDlJ8NELQAHfj/8hZNhfptF4eyrMrQtaSY1pEPGyJ+Yeo2qpFfDhxw==
@@ -1443,7 +1443,7 @@
     "@uniswap/v2-core" "1.0.0"
     "@uniswap/v2-periphery" "1.1.0-beta.0"
 
-"@uma/core@^2.0.1":
+"@uma/core@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@uma/core/-/core-2.1.0.tgz#7ad611a6d7fac6666317c6d5f7ee23000c8c859e"
   integrity sha512-dxz9+cnx/YegKCFMNdPX/hK0Nij1iQvdtk4nkfqLw6zwLrv66yIR+gr4JHDmZdk0vj7sB6/4HUEdWvzGuSHBpA==
@@ -9441,7 +9441,7 @@ web3@1.2.9:
     web3-shh "1.2.9"
     web3-utils "1.2.9"
 
-web3@^1.0.0-beta.34, web3@^1.3.1:
+web3@^1.0.0-beta.34, web3@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.3.4.tgz#31e014873360aa5840eb17f9f171190c967cffb7"
   integrity sha512-D6cMb2EtTMLHgdGbkTPGl/Qi7DAfczR+Lp7iFX3bcu/bsD9V8fZW69hA8v5cRPNGzXUwVQebk3bS17WKR4cD2w==
