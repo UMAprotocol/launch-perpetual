@@ -22,7 +22,7 @@ const argv = require("minimist")(process.argv.slice(), {
 });
 
 // Sanity test arguments:
-if (!argv.url.startsWith("http")) throw "--url must be an HTTP endpoint";
+if (argv.url && !argv.url.startsWith("http")) throw "--url must be an HTTP endpoint";
 if (!argv.priceFeedIdentifier) throw "--priceFeedIdentifier required";
 if (!argv.fundingRateIdentifier) throw "--fundingRateIdentifier required";
 if (!argv.collateralAddress) throw "--collateralAddress required";
@@ -112,7 +112,6 @@ if (!process.env.MNEMONIC) console.log("missing account MNEMONIC, defaulting to 
   const address = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).call(transactionOptions);
   console.log("Simulation successful. Expected Address:", address);
 
-  return;
   // Since the simulated transaction succeeded, send the real one to the network.
   const { transactionHash } = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).send(transactionOptions);
   console.log("Deployed in transaction:", transactionHash);
