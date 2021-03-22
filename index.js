@@ -4,7 +4,7 @@ const { getAbi, getAddress } = require("@uma/core");
 const { parseFixed } = require("@ethersproject/bignumber");
 require("dotenv").config();
 
-// Optional arguments:
+// Required arguments:
 // --url: node url, by default points at http://localhost:8545.
 // --priceFeedIdentifier: price identifier to use.
 // --collateralAddress: collateral token address.
@@ -13,11 +13,15 @@ require("dotenv").config();
 // --syntheticSymbol: short name.
 // --minSponsorTokens: minimum sponsor position size
 
+// Optional arguments
+// ---gasprice: gas price to use in GWEI. Defaults to the web3.eth estimated gas price.
+
 const argv = require("minimist")(process.argv.slice(), {
-  string: ["url", "priceFeedIdentifier", "fundingRateIdentifier", "collateralAddress", "syntheticName", "syntheticSymbol", "minSponsorTokens"]
+  string: ["url", "priceFeedIdentifier", "fundingRateIdentifier", "collateralAddress", "syntheticName", "syntheticSymbol", "minSponsorTokens"],
+  number: ["gasprice"]
 });
 
-// Sanity test optional arguments:
+// Sanity test arguments:
 if (!argv.url.startsWith("https")) throw "--url must be an HTTPS endpoint";
 if (!argv.priceFeedIdentifier) throw "--priceFeedIdentifier required";
 if (!argv.fundingRateIdentifier) throw "--fundingRateIdentifier required";
@@ -25,6 +29,10 @@ if (!argv.collateralAddress) throw "--collateralAddress required";
 if (!argv.syntheticName) throw "--syntheticName required";
 if (!argv.syntheticSymbol) throw "--syntheticSymbol required";
 if (!argv.minSponsorTokens) throw "--minSponsorTokens required";
+if (argv.gasprice) {
+  if (typeof argv.gasprice !== "number") throw "--gasprice must be a number";
+  if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between 1 and 1000 (GWEI)";  
+}
 
 // Check for environment variables:
 if (!process.env.MNEMONIC) console.log("missing account MNEMONIC, defaulting to node's unlocked account");
@@ -90,11 +98,12 @@ if (!process.env.MNEMONIC) console.log("missing account MNEMONIC, defaulting to 
     getAddress("PerpetualCreator", networkId)
   );
 
-  // Transaction parameters
+  // Transaction parameters:
+  // - Web3 estimates the gas price using the last few blocks median gas price.
+  const _gasPrice = argv.gasprice ? argv.gasprice * 1000000000 : await web3.eth.getGasPrice();
   const transactionOptions = {
     gas: 12000000, // 12MM is very high. Set this lower if you have < 2 ETH or so in your wallet.
-    gasPrice: await web3.eth.getGasPrice(),
-    // Web3 estimates the gas price using the last few blocks median gas price.
+    gasPrice: _gasPrice,
     from: account,
   };
 
