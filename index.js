@@ -22,7 +22,7 @@ const argv = require("minimist")(process.argv.slice(), {
 });
 
 // Sanity test arguments:
-if (!argv.url.startsWith("https")) throw "--url must be an HTTPS endpoint";
+if (!argv.url.startsWith("http")) throw "--url must be an HTTP endpoint";
 if (!argv.priceFeedIdentifier) throw "--priceFeedIdentifier required";
 if (!argv.fundingRateIdentifier) throw "--fundingRateIdentifier required";
 if (!argv.collateralAddress) throw "--collateralAddress required";

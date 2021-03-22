@@ -35,11 +35,13 @@ Start ganache.
 yarn ganache-fork your.node.url.io
 ```
 
+Set a `MNEMONIC=word1 word 2 ...` environment variable in a `.env` file. This is optional -- without it, the script will use the provider's default pre-loaded account.
+
 In a separate terminal, run the deployment script (it defaults to using localhost:8545 as the ETH node, which is
-desired in this case). Note: mnemonic is optional here -- without it, ganache will use its default pre-loaded account. Replace the example values with your values.
+desired in this case)
 
 ```bash
-node index.js --gasprice 50 --mnemonic "your mnemonic (12 word seed phrase)" --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
+node index.js --gasprice 50 --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
 ```
 
 Now you should be able to use `localhost:8545` to interact with a forked version of mainnet (or kovan) where your
@@ -50,7 +52,7 @@ contract is deployed.
 Replace the example values with your values.
 
 ```bash
-node index.js --gasprice 50 --url your.node.url.io --mnemonic "your mnemonic (12 word seed phrase)" --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
+node index.js --gasprice 50 --url your.node.url.io --priceFeedIdentifier ETHUSD --fundingRateIdentifier "ETH/BTC" --collateralAddress "0xaddress" --syntheticName "Synthetic ETH" --syntheticSymbol uETH --minSponsorTokens .01
 ```
 
 ## Customize the script
