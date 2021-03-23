@@ -77,9 +77,11 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   };
 
   const configSettings = {
-    rewardRatePerSecond: { rawValue: "0" },
-    proposerBondPercentage: { rawValue: "0" },
+    rewardRatePerSecond: { rawValue: toWei("0.000001") }, // 1% every 10_000 seconds
+    proposerBondPercentage: { rawValue: toWei("0.0001" }, // 0.01% (proposer bond is % of PfC)
     timelockLiveness: 86400, // 1 day
+    // Average expected funding rates should 1000x-100x smaller magnitude than these bounds.
+    // Note that these funding rates are %'s applied per second.
     maxFundingRate: { rawValue: web3.utils.toWei("0.00001") },
     minFundingRate: { rawValue: web3.utils.toWei("-0.00001") },
     proposalTimePastLimit: 1800 // 30 minutes
