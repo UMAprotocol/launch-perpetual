@@ -77,8 +77,12 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   };
 
   const configSettings = {
-    rewardRatePerSecond: { rawValue: "0" },
-    proposerBondPercentage: { rawValue: "0" },
+    rewardRatePerSecond: { rawValue: toWei("0.000000001") }, 
+    // Approximately 3%/year: 0.000000001*60*60*24*360 = 0.03
+    proposerBondPercentage: { rawValue: toWei("0.0007") }, 
+    // 0.07% is derived from a PfC of 300%/year = (300 / 360 / 24) = .035% / hour, and the minimum time that a proposal 
+    // can stay alive is 2 hours, so 0.07% is the minimum that should be staked by a proposer who might corrupt an
+    // entire 2 hour proposal liveness period.
     timelockLiveness: 86400, // 1 day
     maxFundingRate: { rawValue: web3.utils.toWei("0.00001") },
     minFundingRate: { rawValue: web3.utils.toWei("-0.00001") },
@@ -99,6 +103,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
 
   // Simulate transaction to test before sending to the network.
   console.log("Simulating Deployment...");
+  console.log(`Calling PerpFactory @ ${perpetualCreator.options.address}`)
   const address = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).call(transactionOptions);
   console.log("Simulation successful. Expected Address:", address);
 
