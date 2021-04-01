@@ -71,7 +71,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
     sponsorDisputeRewardPercentage: { rawValue: toWei("0.05") }, // 5% reward for sponsors who are disputed invalidly
     disputerDisputeRewardPercentage: { rawValue: toWei("0.2") }, // 20% reward for correct disputes.
     minSponsorTokens: { rawValue: parseFixed(argv.minSponsorTokens.toString(), decimals) }, // Min sponsor position.
-    tokenScaling: { rawValue: toWei("3030") }, // Token scaling used to make initial token trade at 100: 100 / (e.g. current ETH/BTC) price.
+    tokenScaling: { rawValue: toWei("3060") }, // Token scaling used to make initial token trade at 100: 100 / (e.g. current ETH/BTC) price.
     liquidationLiveness: 7200, // 2 hour liquidation liveness.
     withdrawalLiveness: 7200 // 2 hour withdrawal liveness.
   };
