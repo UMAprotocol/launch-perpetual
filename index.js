@@ -70,7 +70,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
     disputeBondPercentage: { rawValue: toWei("0.1") }, // 10% dispute bond.
     sponsorDisputeRewardPercentage: { rawValue: toWei("0.05") }, // 5% reward for sponsors who are disputed invalidly
     disputerDisputeRewardPercentage: { rawValue: toWei("0.2") }, // 20% reward for correct disputes.
-    minSponsorTokens: { rawValue: parseFixed(argv.minSponsorTokens.toString(), decimals) }, // Min sponsor position.
+    minSponsorTokens: { rawValue: parseFixed(argv.minSponsorTokens.toString(), decimals).toString() }, // Min sponsor position.
     tokenScaling: { rawValue: toWei("3060") }, // Token scaling used to make initial token trade at 100: 100 / (e.g. current ETH/BTC) price.
     liquidationLiveness: 7200, // 2 hour liquidation liveness.
     withdrawalLiveness: 7200 // 2 hour withdrawal liveness.
@@ -96,7 +96,7 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
 
   // Transaction parameters
   const transactionOptions = {
-    gas: 12000000, // 12MM is very high. Set this lower if you only have < 2 ETH or so in your wallet.
+    gas: 8000000, // Based on empirical observation of Kovan deployments.
     gasPrice: argv.gasprice * 1000000000, // gasprice arg * 1 GWEI
     from: account,
   };
@@ -110,6 +110,35 @@ if (argv.gasprice < 1 || argv.gasprice > 1000) throw "--gasprice must be between
   // Since the simulated transaction succeeded, send the real one to the network.
   const { transactionHash } = await perpetualCreator.methods.createPerpetual(perpetualParams, configSettings).send(transactionOptions);
   console.log("Deployed in transaction:", transactionHash);
+
+  // Log ABI encoded params for easier contract verification:
+  const newPerpetual = new web3.eth.Contract(
+    getAbi("Perpetual"),
+    address
+  ); 
+  let perpConstructorParams = {
+    ...perpetualParams,
+    configStoreAddress: await newPerpetual.methods.configStore().call(),
+    finderAddress: getAddress("Finder", networkId),
+    tokenFactoryAddress: getAddress("TokenFactory", networkId),
+    timerAddress: await perpetualCreator.methods.timerAddress().call(),
+    tokenAddress: await newPerpetual.methods.tokenCurrency().call()
+  };
+  const encodedParameters = web3.eth.abi.encodeParameters(getAbi("Perpetual", "latest")[0].inputs, [
+    perpConstructorParams
+  ]);
+  console.log("Encoded Perpetual Parameters", encodedParameters);
+  console.table(perpConstructorParams);
+  const encodedConfigStoreParameters = web3.eth.abi.encodeParameters(getAbi("ConfigStore", "latest")[0].inputs, [
+    configSettings,
+    await perpetualCreator.methods.timerAddress().call()
+  ]);
+  console.log("Encoded ConfigStore Parameters", encodedConfigStoreParameters);
+  console.table({
+    ...configSettings,
+    timerAddress: await perpetualCreator.methods.timerAddress().call()
+  });
+  
   process.exit(0);
 })().catch((e) => {
   console.error(e);
